@@ -1,0 +1,116 @@
+@import "latte.css";
+
+* {
+	font-family: "MesloLGS Nerd Font Mono Bold";
+	font-size: 16px;
+	min-height: 24px;
+	border: none;
+	transition: all 0.3s ease-in-out;
+}
+
+window#waybar {
+	background: transparent;
+}
+
+window#waybar.hidden {
+	opacity: 0.2;
+}
+
+#window {
+	margin-top: 8px;
+	margin-left: 8px;
+	padding-left: 16px;
+	padding-right: 16px;
+	border-radius: 26px;
+	transition: none;
+	color: @teal;
+	background-color: @mantle;
+}
+
+#workspaces {
+	margin-top: 8px;
+	margin-left: 12px;
+	margin-bottom: 0;
+	border-radius: 26px;
+	background: @sapphire;
+	transition: none;
+}
+
+#workspaces button {
+	transition: none;
+	color: #f8f8f2;
+	background: transparent;
+	font-size: 16px;
+}
+
+#workspaces button.active {
+	color: @text;
+}
+
+#workspaces button:hover {
+	transition: none;
+	box-shadow: inherit;
+	text-shadow: inherit;
+	color: @surface2;
+}
+#clock {
+	background-color: @mantle;
+	color: @flamingo;
+	padding-left: 16px;
+	padding-right: 16px;
+	margin-top: 8px;
+	margin-left: 8px;
+	margin-right: 12px;
+	margin-bottom: 0;
+	border-radius: 26px;
+	transition: none;
+}
+
+#pulseaudio {
+	margin-top: 8px;
+	margin-left: 8px;
+	padding-left: 16px;
+	padding-right: 16px;
+	margin-bottom: 0;
+	border-radius: 26px;
+	transition: none;
+	color: @rosewater;
+	background: @base;
+}
+
+#tray, #bluetooth {
+	margin-top: 8px;
+	margin-left: 8px;
+	padding-left: 16px;
+	padding-right: 16px;
+	margin-bottom: 0;
+	border-radius: 26px;
+	transition: none;
+	background-color: @base;
+	color: @rosewater;
+}
+
+#battery {
+	background-color: @base;
+	color: @flamingo;
+	margin-top: 8px;
+	margin-left: 8px;
+	padding-left: 16px;
+	padding-right: 16px;
+	margin-bottom: 0;
+	border-radius: 26px;
+	transition: none;
+}
+
+#battery.charging {
+	color: @green;
+}
+
+#battery.warning {
+	color: @yellow;
+}
+
+#battery.critical {
+	color: @red;
+	font-weight: bold;
+}
