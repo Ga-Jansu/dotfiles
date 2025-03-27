@@ -1,8 +1,16 @@
 {
+  "layer": "top",
   "position": "top",
-  "modules-left": ["hyprland/window", "hyprland/workspaces"],
+  "height": 16,
+  "spacing": 0,
+  "exclusive": true,
+  "gtk-layer-shell": true,
+  "passthrough": false,
+  "fixed-center": true,
+  "modules-left": ["custom/logo", "hyprland/workspaces"],
   "modules-center": ["clock"],
-  "modules-right": ["tray", "bluetooth", "pulseaudio",  "battery"],
+  "modules-right": ["pulseaudio",  "battery", "tray"],
+
   "clock": {
 	"format": "{:%H:%M}  ",
 	"format-alt": "{:%A, %B %d, %Y (%R)} ",
@@ -24,10 +32,22 @@
 		"on-scroll-down": "shift_down"
 	}
   },
+  
+  "cpu": {
+    "format": "  {usage}%",
+    "tooltip": true,
+    "interval": 1
+  },
+
+"memory": {
+    "format": "  {used:0.2f}G"
+  },
+
   "hyprland/window": {
 	"format": "{initialClass}",
 	"trim": true
   },
+
   "hyprland/workspaces": {
 	"format": "{icon}",
 	"format-window-separator": "\n",
@@ -39,10 +59,13 @@
 
   "tray": {
 	"icon_size": 22,
-    	"max_length": 15,
-    	"click_to_show": true,
-    	"icon_theme": "FontAwesome"
+    "max_length": 15,
+    "spacing": 10,
+    "show-passive-items": true,
+    "click_to_show": true,
+    "icon_theme": "FontAwesome"
   },
+
   "bluetooth": {
 	"format": " {status}",
 	"format-connected": " {num_connections} connected",
@@ -71,14 +94,37 @@
     	"ignored-sinks": ["Easy Effects Sink"]
   },
   "battery": {
-    "interval": 60,
+    "bat": "BAT1",
+    "adapter": "ADP0",
+    "interval": 1,
     "states": {
-        "warning": 30,
-        "critical": 15
+      "warning": 30,
+      "critical": 15
     },
-    "format": "{capacity}% {icon}",
-    "format-icons": ["", "", "", "", ""],
-    "max-length": 25
-  }
+    "max-length": 25,
+    "format": "{icon} {capacity}%",
+    "format-warning": "{icon} {capacity}%",
+    "format-critical": "{icon} {capacity}%",
+    "format-charging": "<span foreground='#26ff55'> {capacity} %</span>",
+    "format-plugged": "<span foreground='#26ff55'>  {capacity} %</span>",
+    "format-alt": "{icon} {time}",
+    "format-full": "<span foreground='#26ff55'> {capacity} %</span>",
+    "format-icons": ["", "", "", "", ""]
+  },
 
+"custom/logo": {
+    "format": "",
+    "tooltip": false
+  },
+
+  "custom/sep": {
+    "format": "|",
+    "tooltip": false
+  },
+
+  "custom/power": {
+    "tooltip": false,
+    "on-click": "wlogout -p layer-shell &",
+    "format": " "
+  }
 }
