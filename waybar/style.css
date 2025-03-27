@@ -1,116 +1,127 @@
 @import "latte.css";
 
 * {
-	font-family: "MesloLGS Nerd Font Mono Bold";
-	font-size: 16px;
-	min-height: 24px;
-	border: none;
-	transition: all 0.3s ease-in-out;
+  min-height: 0;
+  font-family:
+    JetBrains Mono NL,
+    JetBrainsMonoNerd Font;
+  font-size: 11px;
+  font-weight: 900;
 }
 
 window#waybar {
-	background: transparent;
+  transition-property: background-color;
+  transition-duration: 0.5s;
+  /* background-color: #1e1e2e; */ 
+  background-color: #181825;
+  background-color: rgba(0, 0, 0, 0.7);
 }
 
 window#waybar.hidden {
-	opacity: 0.2;
-}
-
-#window {
-	margin-top: 8px;
-	margin-left: 8px;
-	padding-left: 16px;
-	padding-right: 16px;
-	border-radius: 26px;
-	transition: none;
-	color: @teal;
-	background-color: @mantle;
+  opacity: 0.5;
 }
 
 #workspaces {
-	margin-top: 8px;
-	margin-left: 12px;
-	margin-bottom: 0;
-	border-radius: 26px;
-	background: @sapphire;
-	transition: none;
+  background: #1e1e1e;
+  margin: 2px 1px 3px 1px;
+  padding: 0px 0px;
+  margin: 5px 5px;
+  border-radius: 15px;
+  border: 0px;
+  font-style: normal;
+  opacity: 0.8;
+  font-size: 16px;
+  color: #ffffff;
 }
 
 #workspaces button {
-	transition: none;
-	color: #f8f8f2;
-	background: transparent;
-	font-size: 16px;
+  padding: 1px 1px;
+  margin: 3px 3px;
+  border-radius: 15px;
+  border: 0px;
+  color: #fff;
+  /* background-color: #1e1e1e; */
+  background-color: rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease-in-out;
+  opacity: 1;
 }
 
 #workspaces button.active {
-	color: @text;
+  color: #000;
+  background: #fff;
+  border-radius: 15px;
+  min-width: 40px;
+  transition: all 0.2s ease-in-out;
+  opacity: 1;
 }
 
-#workspaces button:hover {
-	transition: none;
-	box-shadow: inherit;
-	text-shadow: inherit;
-	color: @surface2;
+#workspaces button.urgent {
+  background-color: #ff441f;
 }
+
+#clock,
+#pulseaudio,
+#battery,
+#cpu,
+#tray,
+#memory,
+#window {
+  padding: 0px 8px;
+  margin: 6px 3px;
+  color: #e5e5e5;
+  border-radius: 20px;
+  background-color: #1e1e1e;
+}
+#custom-logo {
+  padding: 0px 10px;
+  color: @rosewater;
+}
+
+#tray {
+  font-size: 10px;
+}
+
+#custom-sep {
+  padding: 0px;
+  color: #585b70;
+}
+
+#custom-spotify.playing {
+  color: #a6e3a1;
+}
+
+window#waybar.empty #window {
+  background-color: transparent;
+}
+
+#cpu {
+  color: #94e2d5;
+}
+
+#memory {
+  color: #cba6f7;
+}
+
 #clock {
-	background-color: @mantle;
-	color: @flamingo;
-	padding-left: 16px;
-	padding-right: 16px;
-	margin-top: 8px;
-	margin-left: 8px;
-	margin-right: 12px;
-	margin-bottom: 0;
-	border-radius: 26px;
-	transition: none;
+  color: #e3e3e3;
+}
+
+#clock.date {
+  color: #e3e3e3;
+}
+
+#window {
+  color: #a6e3a1;
 }
 
 #pulseaudio {
-	margin-top: 8px;
-	margin-left: 8px;
-	padding-left: 16px;
-	padding-right: 16px;
-	margin-bottom: 0;
-	border-radius: 26px;
-	transition: none;
-	color: @rosewater;
-	background: @base;
+  color: #fff;
 }
 
-#tray, #bluetooth {
-	margin-top: 8px;
-	margin-left: 8px;
-	padding-left: 16px;
-	padding-right: 16px;
-	margin-bottom: 0;
-	border-radius: 26px;
-	transition: none;
-	background-color: @base;
-	color: @rosewater;
+#pulseaudio.muted {
+  color: #ff5b45;
 }
 
-#battery {
-	background-color: @base;
-	color: @flamingo;
-	margin-top: 8px;
-	margin-left: 8px;
-	padding-left: 16px;
-	padding-right: 16px;
-	margin-bottom: 0;
-	border-radius: 26px;
-	transition: none;
-}
-
-#battery.charging {
-	color: @green;
-}
-
-#battery.warning {
-	color: @yellow;
-}
-
-#battery.critical {
-	color: @red;
-	font-weight: bold;
+tooltip {
+  border-radius: 8px;
 }
