@@ -1,0 +1,168 @@
+-- load the correct keyboard layout
+loadkeys br-abnt
+
+-- connect to the internet
+iwctl
+  >station <station name> connect <wifi>
+
+-- disk partition
+fdisk /dev/nvme0n1 <partition name>
+  500GiB
+    - 1GiB BOOT (ef00)
+    - 15GiB SWAP (8200)
+    - 484GiB HOME (8300)
+
+-- disk formatting
+mkfs.fat -F32 /dev/nvme0n1p1
+mkswap /dev/nvme0n1p2
+mkfs.btrfs /dev/nvme0n1p3
+
+mount /dev/nvme0n1p3 /mnt
+
+btrfs subvolume create /mnt/@
+btrfs subvolume create /mnt/@home
+btrfs subvolume create /mnt/@snapshots
+btrfs subvolume create /mnt/@var_log
+
+umount /mnt
+
+mount -o noatime,compress=zstd,subvol=@ /dev/nvme0n1p3 /mnt
+mkdir -p /mnt/{home,.snapshots,var/log}
+mount -o noatime,compress=zstd,subvol=@home /dev/nvme0n1p3 /mnt/home
+mount -o noatime,compress=zstd,subvol=@snapshots /dev/nvme0n1p3 /mnt/.snapshots
+mount -o noatime,compress=zstd,subvol=@var_log /dev/nvme0n1p3 /mnt/var/log
+
+mkdir -p /mnt/boot
+mount /dev/nvme0n1p1 /mnt/boot
+
+-- Packages installation
+# "base, linux, linux-firmware" are needed. If you want a more stable kernel, then swap linux with linux-lts
+# "base-devel" base development packages
+# "git" to install the git vcs
+# "btrfs-progs" are user-space utilities for file system management ( needed to harness the potential of btrfs )
+# "grub" the bootloader
+# "efibootmgr" needed to install grub
+# "grub-btrfs" adds btrfs support for the grub bootloader and enables the user to directly boot from snapshots
+# "inotify-tools" used by grub btrfsd deamon to automatically spot new snapshots and update grub entries
+# "timeshift" a GUI app to easily create,plan and restore snapshots using BTRFS capabilities
+# "amd-ucode" microcode updates for the cpu. If you have an intel one use "intel-ucode"
+# "vim" my goto editor, if unfamiliar use nano
+# "networkmanager" to manage Internet connections both wired and wireless ( it also has an applet package network-manager-applet )
+# "pipewire pipewire-alsa pipewire-pulse pipewire-jack" for the new audio framework replacing pulse and jack. 
+# "wireplumber" the pipewire session manager.
+# "reflector" to manage mirrors for pacman
+# "zsh" my favourite shell
+# "zsh-completions" for zsh additional completions
+# "zsh-autosuggestions" very useful, it helps writing commands [ Needs configuration in .zshrc ]
+# "openssh" to use ssh and manage keys
+# "man" for manual pages
+# "sudo" to run commands as other users
+pacstrap -K /mnt base base-devel git btrfs-progs grub efibootmgr grub-btrfs inotify-tools timeshift intel-ucode neovim pipewire pipewire-jack pipewire-alsa pipewire-pulse wireplumber reflector zsh zsh-autosuggestions zsh-completions openssh man sudo
+
+-- Fstab
+genfstab -U /mnt >> /mnt/etc/fstab 
+
+-- Go into the system
+arch-chroot /mnt 
+
+-- Timezone
+ln -sf /usr/share/zoneinfo/America/Sao_Paulo /etc/localtime
+hwclock --systohc --utc
+
+-- Locale
+nvim /etc/locale.gen 
+(uncomment pt_BR.UTF-8)
+locale-gen
+echo LANG=pt_BR.UTF-8 > /etc/locale.conf
+
+-- Keyboard language
+echo KEYMAP=br-abnt > /etc/vconsole.conf
+
+-- Hostname
+echo overlord > /etc/hostname
+touch /etc/hosts
+nvim /etc/hosts
+  127.0.0.1 localhost
+  ::1 localhost
+  127.0.1.1 overlord
+
+-- Root and users
+passwd (Input the root password)
+useradd -mg users -G wheel,storage,power -s /bin/zsh jansen
+passwd jansen (Input user password)
+EDITOR=nvim visudo
+(uncomment the %wheel line, and add at the bottom "Defaults rootpw")
+
+-- Grub configuration
+grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
+grub-mkconfig -o /boot/grub/grub.cfg
+
+-- 32bit support
+nvim /etc/pacman.conf
+  uncomment multilib lines
+
+-- Services
+systemctl enable fstrim.timer
+systemctl enable NetworkManager 
+
+-- Unmount and reboot
+exit
+umount -R /mnt
+reboot
+
+-- After restart
+(connect to the wifi with nmcli)
+timedatectl set-ntp true
+
+-- Automatic snapshot boot entries update
+sudo systemctl edit --full grub-btrfsd
+(change the ExecStart=... to ExecStart=/usr/bin/grub-btrfsd --syslog --timeshift-auto)
+sudo  systemctl restart grub-btrfsd
+sudo systemctl enable grub-btrfsd
+
+-- AUR
+sudo pacman -S --needed git base-devel && git clone https://aur.archlinux.org/yay.git && cd yay && makepkg -si 
+yay -S timeshift-autosnap
+
+-- Video-Drivers (AMD)
+sudo pacman -S mesa vulkan-radeon libva-mesa-driver mesa-vdpau
+sudo pacman -S lib32-mesa lib32-vulkan-radeon lib32-libva-mesa-driver lib32-mesa-vdpau
+
+--graphical environment
+
+KDE:sudo pacman -S plasma-desktop plasma-pa plasma-nm plasma-systemmonitor plasma-firewall plasma-browser-integration kscreen kwalletmanager kwallet-pam bluedevil powerdevil power-profiles-daemon kdeplasma-addons xdg-desktop-portal-kde xwaylandvideobridge kde-gtk-config breeze-gtk cups print-manager konsole dolphin ffmpegthumbs firefox kate okular gwenview ark pinta spectacle dragon 
+
+Hyprland: sudo pacman -S hyprland swaylock waybar thunar kitty pavucontrol dunst xdg-desktop-portal-hyprland wl-clipboard qt5-wayland qt6-wayland xdg-desktop-portal-gtk
+yay -S hyprshot hyprpaper hyprsunset tofi
+
+-- Display manager
+sudo pacman -S ly
+sudo systemctl enable ly
+
+-- Gaming
+
+sudo pacman -S steam
+
+yay -S proton-ge-custom-bin
+
+-- Setup git 
+git config --global user.name "USERNAME"
+git config --global user.email "YOUR@EMAIL.com"
+
+git config --global url."git@github.com:".insteadOf "https://github.com/"
+
+-- SSH-key setup
+ssh-keygen -t ed25519 -C "YOUR@EMAIL.com"
+add to ~/.zshrc:
+    eval "$(ssh-agent -s)"
+    ssh-add ~/.ssh/id_ed25519
+
+Copy and insert to github: cat ~/.ssh/id_ed25519.pub 
+
+test connection: ssh -T git@github.com 
+
+-- Install my dotfiles
+
+cd ~/Documents && git clone https://github.com/Ga-Jansu/dotfiles.git
+
+
